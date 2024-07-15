@@ -10,7 +10,6 @@ class Instituic(models.Model):
     def __str__(self):
         return self.razao_social
 
-
 class InstituicUnidade(models.Model):
     instituicao = models.ForeignKey(Instituic, related_name='unidades', on_delete=models.CASCADE)
     razao_social = models.CharField(max_length=100)
@@ -21,13 +20,11 @@ class InstituicUnidade(models.Model):
     def __str__(self):
         return self.razao_social
 
-
 class SectorSuper(models.Model):
     nome_super_setor = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nome_super_setor
-
 
 class Sector(models.Model):
     super_setor = models.ForeignKey(SectorSuper, related_name='setores', on_delete=models.CASCADE)
@@ -35,7 +32,6 @@ class Sector(models.Model):
 
     def __str__(self):
         return self.nome_setor
-
 
 class Subsector(models.Model):
     setor = models.ForeignKey(Sector, related_name='sub_setores', on_delete=models.CASCADE)
@@ -45,13 +41,11 @@ class Subsector(models.Model):
     def __str__(self):
         return self.nome_sub_setor
 
-
 class Categoria(models.Model):
     nome_categoria = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nome_categoria
-
 
 class SubCategoria(models.Model):
     categoria = models.ForeignKey(Categoria, related_name='sub_categorias', on_delete=models.CASCADE)
@@ -60,20 +54,24 @@ class SubCategoria(models.Model):
     def __str__(self):
         return self.nome_subcategoria
 
-
 class Transaction(models.Model):
-    TRANSFERENCIA = 'Transferência'
-    CONSUMO = 'Consumo'
+    TRANSFERENCIA = 'Doação'
+    TRANSFERENCIA2 = 'Perda'
+    TRANSFERENCIA3 = 'Transferência'
+    TRANSFERENCIA4 = 'Entrada'
+    TRANSFERENCIA5 = 'Saída'
     TIPO_CHOICES = [
-        (TRANSFERENCIA, 'Transferência'),
-        (CONSUMO, 'Consumo'),
+        (TRANSFERENCIA, 'Doação'),
+        (TRANSFERENCIA2, 'Perda'),
+        (TRANSFERENCIA3, 'Transferência'),
+        (TRANSFERENCIA4, 'Entrada'),
+        (TRANSFERENCIA5, 'Saída'),
     ]
 
     transacao = models.CharField(max_length=100, choices=TIPO_CHOICES)
 
     def __str__(self):
         return self.transacao
-
 
 class UnidadeMedida(models.Model):
     unidade_medida = models.CharField(max_length=100)
@@ -82,13 +80,11 @@ class UnidadeMedida(models.Model):
     def __str__(self):
         return self.unidade_medida
 
-
 class Tipo(models.Model):
     tipo = models.CharField(max_length=100)
 
     def __str__(self):
         return self.tipo
-
 
 class Subtipo(models.Model):
     tipo = models.ForeignKey(Tipo, related_name='subtipos', on_delete=models.CASCADE)
@@ -97,13 +93,11 @@ class Subtipo(models.Model):
     def __str__(self):
         return self.subtipo
 
-
 class Fabricante(models.Model):
     nome_fabricante = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nome_fabricante
-
 
 class Modelo(models.Model):
     nome_modelo = models.CharField(max_length=100)
@@ -111,13 +105,11 @@ class Modelo(models.Model):
     def __str__(self):
         return self.nome_modelo
 
-
 class Marca(models.Model):
     nome_marca = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nome_marca
-
 
 class Produto(models.Model):
     nome_produto = models.CharField(max_length=100)
@@ -128,13 +120,11 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome_produto
 
-
 class TipoEmbalagem(models.Model):
     nome_embalagem = models.CharField(max_length=100)
 
     def __str__(self):
         return self.nome_embalagem
-
 
 class DetalheProduto(models.Model):
     produto = models.ForeignKey(Produto, related_name='detalhes', on_delete=models.CASCADE)
@@ -151,6 +141,7 @@ class DetalheProduto(models.Model):
     def __str__(self):
         return f"{self.produto.nome_produto} - {self.subsetor.nome_sub_setor}"
 
+from django.core.exceptions import ValidationError
 
 class MovimentacaoProduto(models.Model):
     data_hora_movimentacao = models.DateTimeField(default=timezone.now)
@@ -161,6 +152,10 @@ class MovimentacaoProduto(models.Model):
     transacao = models.ForeignKey(Transaction, related_name='movimentacoes', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
+  
+        if self.detalhe_produto.quantidade_produto < self.quantidade_movimentada:
+            raise ValidationError("Quantidade insuficiente no subsetor de origem para realizar a movimentação.")
+
         self.detalhe_produto.quantidade_produto -= self.quantidade_movimentada
         self.detalhe_produto.save()
 
@@ -178,12 +173,18 @@ class MovimentacaoProduto(models.Model):
                 'preco_venda_produto': self.detalhe_produto.preco_venda_produto,
             }
         )
-
+    
         detalhe_produto_destino.quantidade_produto += self.quantidade_movimentada
         detalhe_produto_destino.save()
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Movimentação de {self.quantidade_movimentada} unidades de {self.detalhe_produto.produto.nome_produto}"
-    
+        return f"Movimentação de {self.quantidade_movimentada} unidades de {self.detalhe_produto.produto.nome_produto} entre o Subsetor origem {self.subsector_origem} para o Subsetor destino {self.subsector_destino}"
+
+class ProdutoMovimentoItem(models.Model):
+     Produto = models.ForeignKey(DetalheProduto, related_name='pdt', on_delete=models.CASCADE)
+     qtdmovimenta = models.ForeignKey(DetalheProduto, related_name = 'qtd_pr', on_delete = models.CASCADE)
+     id_produto = models.ForeignKey(DetalheProduto,related_name = 'id_produto', on_delete = models.CASCADE)
+     id_produto = id_produto = models.ForeignKey(DetalheProduto,related_name = 'id_produto', on_delete = models.CASCADE)
+     
