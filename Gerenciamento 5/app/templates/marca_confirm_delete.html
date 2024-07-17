@@ -1,0 +1,18 @@
+<!-- marca_confirm_delete.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirmar Exclusão</title>
+</head>
+<body>
+    <h1>Confirmar Exclusão</h1>
+    <p>Você tem certeza que deseja excluir a marca "{{ object.nome_marca }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirmar Exclusão</button>
+    </form>
+    <br>
+    <a href="{% url 'marca-list' %}">Cancelar</a>
+</body>
+</html>

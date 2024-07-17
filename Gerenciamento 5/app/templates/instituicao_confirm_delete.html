@@ -1,0 +1,17 @@
+<!-- instituicao_confirm_delete.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirmar Exclusão de Instituição</title>
+</head>
+<body>
+    <h1>Confirmar Exclusão de Instituição</h1>
+    <p>Você tem certeza que deseja excluir a instituição "{{ object.razao_social }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirmar</button>
+    </form>
+    <a href="{% url 'instituicao-list' %}">Cancelar</a>
+</body>
+</html>

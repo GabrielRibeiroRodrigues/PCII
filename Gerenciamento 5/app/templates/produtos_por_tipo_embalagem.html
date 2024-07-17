@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Produtos por Tipo de Embalagem</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Produtos por Tipo de Embalagem</h1>
+    <table>
+        <tr>
+            <th>Tipo de Embalagem</th>
+            <th>Nome do Produto</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Fabricante</th>
+        </tr>
+        {% for tipo in tipos_embalagem %}
+            <tr>
+                <td rowspan="{{ tipo.produtos_set.count|default_if_none:0 }}">{{ tipo.nome_embalagem }}</td>
+                {% for produto in tipo.produtos_set %}
+                    {% if forloop.first %}
+                        <td>{{ produto.produto.nome_produto }}</td>
+                        <td>{{ produto.produto.marca.nome_marca }}</td>
+                        <td>{{ produto.produto.modelo.nome_modelo }}</td>
+                        <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
+                    {% else %}
+                        </tr>
+                        <tr>
+                        <td>{{ produto.produto.nome_produto }}</td>
+                        <td>{{ produto.produto.marca.nome_marca }}</td>
+                        <td>{{ produto.produto.modelo.nome_modelo }}</td>
+                        <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">Nenhum produto encontrado para este tipo de embalagem.</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+</body>
+</html>

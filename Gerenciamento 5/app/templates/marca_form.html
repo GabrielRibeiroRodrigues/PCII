@@ -1,0 +1,19 @@
+<!-- marca_form.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if object %}Atualizar Marca{% else %}Adicionar Marca{% endif %}</title>
+</head>
+<body>
+    <h1>{% if object %}Atualizar Marca{% else %}Adicionar Marca{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <br>
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>
