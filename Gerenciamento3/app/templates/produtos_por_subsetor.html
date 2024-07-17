@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Produtos por Subsetor</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Produtos por Subsetor</h1>
+    <table>
+        <tr>
+            <th>Nome do Produto</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Fabricante</th>
+            <!-- Adicione outras colunas conforme necessário -->
+        </tr>
+        {% for produto in produtos_por_subsetor %}
+            <tr>
+                <td>{{ produto.produto.nome_produto }}</td>
+                <td>{{ produto.produto.marca.nome_marca }}</td>
+                <td>{{ produto.produto.modelo.nome_modelo }}</td>
+                <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
+                <!-- Adicione outras informações do produto -->
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">Nenhum produto encontrado para este subsetor.</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+</body>
+</html>

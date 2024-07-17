@@ -182,9 +182,9 @@ class MovimentacaoProduto(models.Model):
     def __str__(self):
         return f"Movimentação de {self.quantidade_movimentada} unidades de {self.detalhe_produto.produto.nome_produto} entre o Subsetor origem {self.subsector_origem} para o Subsetor destino {self.subsector_destino}"
 
-class ProdutoMovimentoItem(models.Model):
-     Produto = models.ForeignKey(DetalheProduto, related_name='pdt', on_delete=models.CASCADE)
-     qtdmovimenta = models.ForeignKey(DetalheProduto, related_name = 'qtd_pr', on_delete = models.CASCADE)
-     id_produto = models.ForeignKey(DetalheProduto,related_name = 'id_produto', on_delete = models.CASCADE)
-     id_produto = id_produto = models.ForeignKey(DetalheProduto,related_name = 'id_produto', on_delete = models.CASCADE)
+# class ProdutoMovimentoItem(models.Model):
+#      Produto = models.ForeignKey(DetalheProduto, related_name='pdt', on_delete=models.CASCADE)
+#      qtdmovimenta = models.ForeignKey(DetalheProduto, related_name = 'qtd_pr', on_delete = models.CASCADE)
+#      id_produto = models.ForeignKey(DetalheProduto,related_name = 'id_produto', on_delete = models.CASCADE)
+#      id_produto = id_produto = models.ForeignKey(DetalheProduto,related_name = 'id_produto', on_delete = models.CASCADE)
      
