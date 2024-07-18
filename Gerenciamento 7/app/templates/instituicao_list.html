@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unidades por Instituição</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unidades por Instituição</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Filtrar</button>
+    </form>
+
+    {% if instituicao %}
+        <h2>Instituição: {{ instituicao.razao_social }}</h2>
+        <table>
+            <tr>
+                <th>Razão Social</th>
+                <th>Nome Fantasia</th>
+                <th>CNPJ</th>
+                <th>CEP</th>
+            </tr>
+            {% for unidade in unidades %}
+                <tr>
+                    <td>{{ unidade.razao_social }}</td>
+                    <td>{{ unidade.nome_fantasia }}</td>
+                    <td>{{ unidade.cnpj }}</td>
+                    <td>{{ unidade.cep }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">Nenhuma unidade encontrada para esta instituição.</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+</body>
+</html>
