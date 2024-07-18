@@ -21,36 +21,43 @@
 </head>
 <body>
     <h1>Produtos por Tipo de Embalagem</h1>
+    
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Filtrar</button>
+    </form>
+
     <table>
         <tr>
-            <th>Tipo de Embalagem</th>
             <th>Nome do Produto</th>
             <th>Marca</th>
             <th>Modelo</th>
             <th>Fabricante</th>
+            <th>Cor</th>
+            <th>Sabor</th>
+            <th>Quantidade na Embalagem</th>
+            <th>Tipo de Embalagem</th>
+            <th>Quantidade</th>
+            <th>Preço de Custo</th>
+            <th>Preço de Venda</th>
         </tr>
-        {% for tipo in tipos_embalagem %}
+        {% for produto in produtos_por_tipo_embalagem %}
             <tr>
-                <td rowspan="{{ tipo.produtos_set.count|default_if_none:0 }}">{{ tipo.nome_embalagem }}</td>
-                {% for produto in tipo.produtos_set %}
-                    {% if forloop.first %}
-                        <td>{{ produto.produto.nome_produto }}</td>
-                        <td>{{ produto.produto.marca.nome_marca }}</td>
-                        <td>{{ produto.produto.modelo.nome_modelo }}</td>
-                        <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
-                    {% else %}
-                        </tr>
-                        <tr>
-                        <td>{{ produto.produto.nome_produto }}</td>
-                        <td>{{ produto.produto.marca.nome_marca }}</td>
-                        <td>{{ produto.produto.modelo.nome_modelo }}</td>
-                        <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
-                    {% endif %}
-                {% endfor %}
+                <td>{{ produto.produto.nome_produto }}</td>
+                <td>{{ produto.produto.marca.nome_marca }}</td>
+                <td>{{ produto.produto.modelo.nome_modelo }}</td>
+                <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
+                <td>{{ produto.cor_produto }}</td>
+                <td>{{ produto.sabor_produto }}</td>
+                <td>{{ produto.quantidade_embalagem_produto }}</td>
+                <td>{{ produto.tipo_embalagem_produto.nome_embalagem }}</td>
+                <td>{{ produto.quantidade_produto }}</td>
+                <td>{{ produto.preco_custo_produto }}</td>
+                <td>{{ produto.preco_venda_produto }}</td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="5">Nenhum produto encontrado para este tipo de embalagem.</td>
+                <td colspan="11">Nenhum produto encontrado para este tipo de embalagem.</td>
             </tr>
         {% endfor %}
     </table>

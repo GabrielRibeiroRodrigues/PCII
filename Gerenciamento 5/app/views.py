@@ -61,47 +61,86 @@ class ProdutosPorSetorListView(ListView):
         # Filtrar produtos pelo setor específico
         return Produto.objects.filter(detalhes__subsetor__setor_id=setor_id)
 
+# views.py
+from django.shortcuts import render
+from django.views.generic import ListView
+from .models import DetalheProduto, Subsector
+from .forms import SubsectorSelectForm
+
+# views.py
 class ProdutosPorSubsetorListView(ListView):
     model = DetalheProduto
     template_name = 'produtos_por_subsetor.html'
     context_object_name = 'produtos_por_subsetor'
 
     def get_queryset(self):
-        subsetor_id = self.kwargs['subsetor_id']
-        return DetalheProduto.objects.filter(subsetor_id=subsetor_id)
+        subsetor_id = self.request.GET.get('subsetor')
+        if subsetor_id:
+            produtos = DetalheProduto.objects.filter(subsetor_id=subsetor_id)
+            return produtos
+        return DetalheProduto.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = SubsectorSelectForm(self.request.GET or None)
+        context['form'] = form
+        return context
+
+
 
 class ProdutosPorTipoEmbalagemListView(ListView):
+    model = DetalheProduto
     template_name = 'produtos_por_tipo_embalagem.html'
-    context_object_name = 'tipos_embalagem'
+    context_object_name = 'produtos_por_tipo_embalagem'
 
     def get_queryset(self):
-        tipos_embalagem = TipoEmbalagem.objects.all()
-        for tipo in tipos_embalagem:
-            # Obtém todos os produtos relacionados a este tipo de embalagem
-            produtos = DetalheProduto.objects.filter(tipo_embalagem_produto=tipo)
-            # Atribui a lista de produtos ao tipo de embalagem
-            tipo.produtos_set = produtos
-        return tipos_embalagem
+        tipo_embalagem_id = self.request.GET.get('tipo_embalagem')
+        if tipo_embalagem_id:
+            produtos = DetalheProduto.objects.filter(tipo_embalagem_produto_id=tipo_embalagem_id)
+            return produtos
+        return DetalheProduto.objects.none()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = TipoEmbalagemSelectForm(self.request.GET or None)
+        context['form'] = form
+        return context
 class ProdutosPorFabricanteListView(ListView):
+    model = DetalheProduto
     template_name = 'produtos_por_fabricante.html'
-    context_object_name = 'fabricantes'
+    context_object_name = 'produtos_por_fabricante'
 
     def get_queryset(self):
-        fabricantes = Fabricante.objects.all()
-        for fabricante in fabricantes:
-            produtos = DetalheProduto.objects.filter(produto__fabricante=fabricante)
-            fabricante.produtos_set = produtos
-        return fabricantes    
+        fabricante_id = self.request.GET.get('fabricante')
+        if fabricante_id:
+            produtos = DetalheProduto.objects.filter(produto__fabricante_id=fabricante_id)
+            return produtos
+        return DetalheProduto.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = FabricanteSelectForm(self.request.GET or None)
+        context['form'] = form
+        return context
 
 class ProdutosPorTransacaoListView(ListView):
+    model = MovimentacaoProduto
     template_name = 'produtos_por_transacao.html'
-    context_object_name = 'transacoes'
+    context_object_name = 'produtos_por_transacao'
 
     def get_queryset(self):
- 
-        transacoes = Transaction.objects.all().prefetch_related('movimentacoes')
-        return transacoes
+        transacao_id = self.request.GET.get('transacao')
+        if transacao_id:
+            movimentacoes = MovimentacaoProduto.objects.filter(transacao_id=transacao_id)
+            produtos = [movimentacao.detalhe_produto for movimentacao in movimentacoes]
+            return produtos
+        return MovimentacaoProduto.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = TransacaoSelectForm(self.request.GET or None)
+        context['form'] = form
+        return context
 
 class InstituicaoListView(ListView):
     model = Instituic
@@ -147,24 +186,21 @@ class UnidadeInstituicaoDeleteView(DeleteView):
     template_name = 'instituicaounidade_confirm_delete.html'
     success_url = reverse_lazy('unidade-list')
 
-class MarcaListView(ListView):
-    model = Marca
-    template_name = 'marca_list.html'
-    context_object_name = 'marcas'
+class ProdutosPorMarcaListView(ListView):
+    model = DetalheProduto
+    template_name = 'produtos_por_marca.html'
+    context_object_name = 'produtos_por_marca'
 
-class MarcaCreateView(CreateView):
-    model = Marca
-    template_name = 'marca_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('marca-list')
+    def get_queryset(self):
+        marca_id = self.request.GET.get('marca')
+        if marca_id:
+            produtos = DetalheProduto.objects.filter(produto__marca_id=marca_id)
+            return produtos
+        return DetalheProduto.objects.none()
 
-class MarcaUpdateView(UpdateView):
-    model = Marca
-    template_name = 'marca_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('marca-list')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = MarcaSelectForm(self.request.GET or None)
+        context['form'] = form
+        return context
 
-class MarcaDeleteView(DeleteView):
-    model = Marca
-    template_name = 'marca_confirm_delete.html'
-    success_url = reverse_lazy('marca-list')

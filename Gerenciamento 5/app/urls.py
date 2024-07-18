@@ -21,9 +21,6 @@ urlpatterns = [
     path('unidades/nova/', views.UnidadeInstituicaoCreateView.as_view(), name='unidade-create'),
     path('unidades/<int:pk>/', views.UnidadeInstituicaoUpdateView.as_view(), name='unidade-update'),
     path('unidades/<int:pk>/excluir/', views.UnidadeInstituicaoDeleteView.as_view(), name='unidade-delete'),
-     path('marcas/', views.MarcaListView.as_view(), name='marca-list'),
-    path('marcas/nova/', views.MarcaCreateView.as_view(), name='marca-create'),
-    path('marcas/<int:pk>/', views.MarcaUpdateView.as_view(), name='marca-update'),
-    path('marcas/<int:pk>/excluir/', views.MarcaDeleteView.as_view(), name='marca-delete'),
+     path('marcas/', views.ProdutosPorMarcaListView         .as_view(), name='marca-list'),
     path('', views.home, name='home'),
 ]

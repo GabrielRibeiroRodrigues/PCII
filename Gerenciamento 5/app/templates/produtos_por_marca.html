@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Produtos por Transação</title>
+    <title>Produtos por Marca</title>
     <style>
         table {
             width: 100%;
@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    <h1>Produtos por Transação</h1>
+    <h1>Produtos por Marca</h1>
     
     <form method="get">
         {{ form.as_p }}
@@ -40,9 +40,8 @@
             <th>Quantidade</th>
             <th>Preço de Custo</th>
             <th>Preço de Venda</th>
-            <th>Transação</th>
         </tr>
-        {% for produto in produtos_por_transacao %}
+        {% for produto in produtos_por_marca %}
             <tr>
                 <td>{{ produto.produto.nome_produto }}</td>
                 <td>{{ produto.produto.marca.nome_marca }}</td>
@@ -55,15 +54,13 @@
                 <td>{{ produto.quantidade_produto }}</td>
                 <td>{{ produto.preco_custo_produto }}</td>
                 <td>{{ produto.preco_venda_produto }}</td>
-                <td>{{ produto.movimentacoes.last.transacao }}</td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="12">Nenhum produto encontrado para esta transação.</td>
+                <td colspan="11">Nenhum produto encontrado para esta marca.</td>
             </tr>
         {% endfor %}
     </table>
     <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
 </body>
 </html>
-        
