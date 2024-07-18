@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nova Movimentação</title>
+</head>
+<body>
+    <h1>Nova Movimentação</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+    <a href="{% url 'home' %}">Voltar</a>
+</body>
+</html>
