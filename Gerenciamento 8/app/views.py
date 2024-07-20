@@ -6,11 +6,7 @@ from .forms import *
 
 def home(request):
     return render(request, 'home.html')
-
-class ProdutoListView(ListView):
-    model = Produto
-    template_name = 'produto_list.html'
-
+#CRIANDO PRODUTOS
 class ProdutoCreateView(CreateView):
     model = Produto
     form_class = ProdutoForm
@@ -36,21 +32,63 @@ class ProdutoCreateView(CreateView):
             return redirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))
-
-class MovimentacaoCreateView(CreateView):
-    model = MovimentacaoProduto
-    form_class = MovimentacaoForm
-    template_name = 'movimentacao_form.html'
-    success_url = '/movimentacoes/'
-
-class MovimentacaoListView(ListView):
-    model = MovimentacaoProduto
-    template_name = 'movimentacao_list.html'
-
+#LISTA DE PRODUTOS
+class ProdutoListView(ListView):
+    model = Produto
+    template_name = 'produto_list.html'
+#DETALHES DO PRODUTO
 class ProdutoDetailView(DetailView):
     model = Produto
     template_name = 'produto_detail.html'
 
+#LISTA DE MOVIMENTAÇÕES
+class MovimentacaoListView(ListView):
+    model = MovimentacaoProduto
+    template_name = 'movimentacao_list.html'
+#FUNCÃO PARA SELECIONAR SUB SETORES PARA MOVIMENTACAO DE PRODUTOS
+def select_subsectors_movimentacoes(request):
+    if request.method == "POST":
+        form = SubsectorSelecttForm(request.POST)
+        if form.is_valid():
+            subsector_origem = form.cleaned_data['subsetor_origem']
+            subsector_destino = form.cleaned_data['subsetor_destino']
+            return redirect('select_products', origem_id=subsector_origem.id, destino_id=subsector_destino.id)
+    else:
+        form = SubsectorSelecttForm()
+    return render(request, 'select_subsectors.html', {'form': form})
+#FUNCÃO PARA SELECIONAR PRODUTOS DEPEDENDO DO SUBSETOR 
+def select_products(request, origem_id, destino_id):
+    subsector_origem = get_object_or_404(Subsector, id=origem_id)
+    subsector_destino = get_object_or_404(Subsector, id=destino_id)
+    produtos_disponiveis = DetalheProduto.objects.filter(subsetor=subsector_origem)
+
+    if request.method == "POST":
+        form = MovimentacaoForm_Completo(request.POST, subsetor_origem=subsector_origem)
+        if form.is_valid():
+            movimentacao = form.save(commit=False)
+            movimentacao.subsector_origem = subsector_origem
+            movimentacao.subsector_destino = subsector_destino
+            movimentacao.save()
+            return redirect('movimentacao_success')
+    else:
+        form = MovimentacaoForm_Completo(subsetor_origem=subsector_origem)
+
+    return render(request, 'select_products.html', {
+        'form': form,
+        'produtos_disponiveis': produtos_disponiveis,
+        'subsector_origem': subsector_origem,
+        'subsector_destino': subsector_destino
+    })      
+#CRIANDO MOVIMENTAÇÕES DE PRODUTO
+class MovimentacaoCreateView(CreateView):
+    model = MovimentacaoProduto
+    form_class = MovimentacaoForm_Completo
+    template_name = 'movimentacao_form.html'
+    success_url = '/movimentacoes/'
+
+
+
+#LISTA DE PRODUTOS POR SETOR
 class ProdutosPorSetorListView(ListView):
     model = Produto
     template_name = 'produtos_por_setor.html'
@@ -58,7 +96,7 @@ class ProdutosPorSetorListView(ListView):
     def get_queryset(self):
         setor_id = self.kwargs['setor_id']
         return Produto.objects.filter(detalhes__subsetor__setor_id=setor_id)
-
+#LISTA DE PRODUTOS POR SUB SETOR
 class ProdutosPorSubsetorListView(ListView):
     model = DetalheProduto
     template_name = 'produtos_por_subsetor.html'
@@ -75,7 +113,7 @@ class ProdutosPorSubsetorListView(ListView):
         form = SubsectorSelectForm(self.request.GET or None)
         context['form'] = form
         return context
-
+#LISTAS DE PRODUTOS FILTRADOS POR EMBALAGEM 
 class ProdutosPorTipoEmbalagemListView(ListView):
     model = DetalheProduto
     template_name = 'produtos_por_tipo_embalagem.html'
@@ -92,7 +130,7 @@ class ProdutosPorTipoEmbalagemListView(ListView):
         form = TipoEmbalagemSelectForm(self.request.GET or None)
         context['form'] = form
         return context
-
+#LISTAS DE PRODUTOS FILTRADOS POR FABRICANTE
 class ProdutosPorFabricanteListView(ListView):
     model = DetalheProduto
     template_name = 'produtos_por_fabricante.html'
@@ -109,7 +147,7 @@ class ProdutosPorFabricanteListView(ListView):
         form = FabricanteSelectForm(self.request.GET or None)
         context['form'] = form
         return context
-
+#LISTAS DE PRODUTOS FILTRADOS POR TIPO DE TRANSAÇÃO
 class ProdutosPorTransacaoListView(ListView):
     model = MovimentacaoProduto
     template_name = 'produtos_por_transacao.html'
@@ -128,50 +166,7 @@ class ProdutosPorTransacaoListView(ListView):
         context['form'] = form
         return context
 
-class InstituicaoListView(ListView):
-    model = Instituic
-    template_name = 'instituicao_list.html'
-    context_object_name = 'instituicoes'
-
-class InstituicaoCreateView(CreateView):
-    model = Instituic
-    template_name = 'instituicao_form.html'
-    fields = ['razao_social', 'nome_fantasia', 'cnpj', 'cep']
-    success_url = reverse_lazy('instituicao-list')
-
-class InstituicaoUpdateView(UpdateView):
-    model = Instituic
-    template_name = 'instituicao_form.html'
-    fields = ['razao_social', 'nome_fantasia', 'cnpj', 'cep']
-    success_url = reverse_lazy('instituicao-list')
-
-class InstituicaoDeleteView(DeleteView):
-    model = Instituic
-    template_name = 'instituicao_confirm_delete.html'
-    success_url = reverse_lazy('instituicao-list')
-
-class UnidadeInstituicaoListView(ListView):
-    model = InstituicUnidade
-    template_name = 'instituicaounidade_list.html'
-    context_object_name = 'unidades'
-
-class UnidadeInstituicaoCreateView(CreateView):
-    model = InstituicUnidade
-    template_name = 'instituicaounidade_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('unidade-list')
-
-class UnidadeInstituicaoUpdateView(UpdateView):
-    model = InstituicUnidade
-    template_name = 'instituicaounidade_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('unidade-list')
-
-class UnidadeInstituicaoDeleteView(DeleteView):
-    model = InstituicUnidade
-    template_name = 'instituicaounidade_confirm_delete.html'
-    success_url = reverse_lazy('unidade-list')
-
+#LISTAS DE PRODUTOS FILTRADOS POR MARCA
 class ProdutosPorMarcaListView(ListView):
     model = DetalheProduto
     template_name = 'produtos_por_marca.html'
@@ -189,71 +184,12 @@ class ProdutosPorMarcaListView(ListView):
         context['form'] = form
         return context
 
-def select_subsectors(request):
-    if request.method == "POST":
-        form = SubsectorSelecttForm(request.POST)
-        if form.is_valid():
-            subsector_origem = form.cleaned_data['subsetor_origem']
-            subsector_destino = form.cleaned_data['subsetor_destino']
-            return redirect('select_products', origem_id=subsector_origem.id, destino_id=subsector_destino.id)
-    else:
-        form = SubsectorSelecttForm()
-    return render(request, 'select_subsectors.html', {'form': form})
 
-def select_products(request, origem_id, destino_id):
-    subsector_origem = get_object_or_404(Subsector, id=origem_id)
-    subsector_destino = get_object_or_404(Subsector, id=destino_id)
-    produtos_disponiveis = DetalheProduto.objects.filter(subsetor=subsector_origem)
-
-    if request.method == "POST":
-        form = MovimentacaoForm(request.POST, subsetor_origem=subsector_origem)
-        if form.is_valid():
-            movimentacao = form.save(commit=False)
-            movimentacao.subsector_origem = subsector_origem
-            movimentacao.subsector_destino = subsector_destino
-            movimentacao.save()
-            return redirect('movimentacao_success')
-    else:
-        form = MovimentacaoForm(subsetor_origem=subsector_origem)
-
-    return render(request, 'select_products.html', {
-        'form': form,
-        'produtos_disponiveis': produtos_disponiveis,
-        'subsector_origem': subsector_origem,
-        'subsector_destino': subsector_destino
-    })
-
+#FUNÇÃO PARA CONFIRMAÇÃO DE MOVIMENTACAO
 def movimentacao_success(request):
     return render(request, 'movimentacao_success.html')
 
-def filter_instituicao(request):
-    form = InstituicaoSelectForm(request.POST or None)
-    instituicao = None
-    unidades = None
 
-    if form.is_valid():
-        instituicao = form.cleaned_data['instituicao']
-        unidades = InstituicUnidade.objects.filter(instituicao=instituicao)
 
-    return render(request, 'instituicao_list.html', {
-        'form': form,
-        'instituicao': instituicao,
-        'unidades': unidades
-    })
-def selecionar_transacao(request):
-    if request.method == 'POST':
-        form = TransacaoSelectForm(request.POST)
-        if form.is_valid():
-            transacao = form.cleaned_data['transacao']
-            # Redirecionar para a próxima etapa, passando o ID da transação selecionada
-            return redirect('selecionar_subsectores', transacao_id=transacao.id)
-    else:
-        form = TransacaoSelectForm()
     
-    return render(request, 'selecionar_transacao.html', {'form': form})
     
-class AdicionarEstoqueView(View):
-    def get(self, request, pk):
-        produto = get_object_or_404(DetalheProduto, pk=pk)
-        form = AdicionarEstoqueForm()
-        return render(request, 'adicionar_estoque.html', {'form': form, 'produto': produto})    
