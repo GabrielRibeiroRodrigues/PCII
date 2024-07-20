@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Produtos por Setor</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Produtos por Setor</h1>
+    
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Filtrar</button>
+    </form>
+    
+    <h2>Setor: {{ setor.nome_setor }}</h2>
+    
+    <table>
+        <tr>
+            <th>Nome do Produto</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Fabricante</th>
+            <th>Subsetor</th>
+        </tr>
+        {% for produto in produtos_por_setor %}
+            <tr>
+                <td>{{ produto.nome_produto }}</td>
+                <td>{{ produto.marca.nome_marca }}</td>
+                <td>{{ produto.modelo.nome_modelo }}</td>
+                <td>{{ produto.fabricante.nome_fabricante }}</td>
+                <td>{{ produto.detalhes.first.subsetor.nome_sub_setor }}</td> <!-- Exibindo o nome do Subsetor -->
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">Nenhum produto encontrado para este setor.</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+</body>
+</html>

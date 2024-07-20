@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu</title>
+</head>
+<body>
+    <h1>Menu</h1>
+    <ul>
+        <li><a href="{% url 'produto-create' %}">Criar Produto</a></li>
+        <li><a href="{% url 'produto-list' %}">Listar Produtos</a></li>             
+        <li><a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a></li>
+        <li><a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a></li>
+        <li><a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por embalagem</a></li>
+        <li><a href="{% url 'produtos-por-fabricante' %}">Gerenciar por fabricante</a></li>
+        <li><a href="{% url 'produtos-por-transacao' %}">Gerenciar por transacao</a></li>
+        <li><a href="{% url 'marca-list' %}">Gerenciar por marcas</a></li>
+        <li><a href="{% url 'transacoes-tipos' %}">Transacoes   </a></li>
+        
+        
+        
+    </ul>
+</body>
+</html>

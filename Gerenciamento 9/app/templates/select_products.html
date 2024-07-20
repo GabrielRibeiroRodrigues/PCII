@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Products</title>
+</head>
+<body>
+    <h1>Produtos Disponíveis no {{ subsector_origem.nome_sub_setor }}</h1>
+    <ul>
+        {% for produto in produtos_disponiveis %}
+            <li>{{ produto.produto.nome_produto }} - Quantidade: {{ produto.quantidade_produto }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Movimentar Produto</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Movimentar</button>
+    </form>
+</body>
+</html>
