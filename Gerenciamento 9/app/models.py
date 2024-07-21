@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-
+from django.contrib.auth.models import AbstractUser
 class Instituic(models.Model):
     razao_social = models.CharField(max_length=100)
     nome_fantasia = models.CharField(max_length=100)
@@ -176,7 +176,7 @@ class MovimentacaoProduto(models.Model):
         detalhe_produto_destino.save()
 
         super().save(*args, **kwargs)
-
+            
     def __str__(self):
         return f"Movimentação de {self.quantidade_movimentada} unidades de {self.detalhe_produto.produto.nome_produto} entre o Subsetor origem {self.subsector_origem} para o Subsetor destino {self.subsector_destino}"
 
@@ -189,3 +189,12 @@ class ProdutoMovimentoItem(models.Model):
 
     def __str__(self):
         return f"{self.id_produto_saida.produto.nome_produto} -> {self.id_produto.produto.nome_produto}"
+    
+#CRIANDO USUARIO
+
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+class CustomUser(AbstractUser):
+    subsetor = models.ForeignKey('Subsector', on_delete=models.SET_NULL, null=True, blank=True)
+

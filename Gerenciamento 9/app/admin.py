@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import *
+
+# Registrando modelos normais
 admin.site.register(Produto)
 admin.site.register(DetalheProduto)
 admin.site.register(TipoEmbalagem)
@@ -20,4 +23,26 @@ admin.site.register(Subtipo)
 admin.site.register(MovimentacaoProduto)
 admin.site.register(ProdutoMovimentoItem)
 
+# Importar CustomUser do models.py
+from .models import CustomUser
 
+class CustomUserAdmin(BaseUserAdmin):
+    model = CustomUser
+    list_display = ('username', 'email', 'subsetor', 'is_staff')
+    list_filter = ('is_staff', 'is_superuser', 'subsetor')
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'subsetor')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'subsetor'),
+        }),
+    )
+    search_fields = ('username', 'email')
+    ordering = ('username',)
+
+admin.site.register(CustomUser, CustomUserAdmin)
