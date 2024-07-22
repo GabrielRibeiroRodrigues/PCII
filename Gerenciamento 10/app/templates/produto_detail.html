@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>{% block title %}Detalhes do Produto{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .content {
+            padding: 20px;
+            margin-top: 50px; /* Add a top margin to avoid content overlay */
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        li a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        li a:hover {
+            color: #0000ff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px; 
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Detalhes do Produto: {{ object.nome_produto }}</h1>
+    <table>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+        <tr>
+            <td>Marca</td>
+            <td>{{ object.marca.nome_marca }}</td>
+        </tr>
+        <tr>
+            <td>Modelo</td>
+            <td>{{ object.modelo.nome_modelo }}</td>
+        </tr>
+        <tr>
+            <td>Fabricante</td>
+            <td>{{ object.fabricante.nome_fabricante }}</td>
+        </tr>
+    </table>
+
+    <h2>Detalhes Específicos</h2>
+    {% for detalhe in object.detalhes.all %}
+        <table>
+            <tr>
+                <th>Campo</th>
+                <th>Valor</th>
+            </tr>
+            <tr>
+                <td>Subsetor</td>
+                <td>{{ detalhe.subsetor.nome_sub_setor }}</td>
+            </tr>
+            <tr>
+                <td>Unidade</td>
+                <td>{{ detalhe.unidade_produto }}</td>
+            </tr>
+            <tr>
+                <td>Cor</td>
+                <td>{{ detalhe.cor_produto }}</td>
+            </tr>
+            <tr>
+                <td>Sabor</td>
+                <td>{{ detalhe.sabor_produto }}</td>
+            </tr>
+            <tr>
+                <td>Quantidade na Embalagem</td>
+                <td>{{ detalhe.quantidade_embalagem_produto }}</td>
+            </tr>
+            <tr>
+                <td>Tipo de Embalagem</td>
+                <td>{{ detalhe.tipo_embalagem_produto.nome_embalagem }}</td>
+            </tr>
+            <tr>
+                <td>Quantidade</td>
+                <td>{{ detalhe.quantidade_produto }}</td>
+            </tr>
+            <tr>
+                <td>Preço de Custo</td>
+                <td>{{ detalhe.preco_custo_produto }}</td>
+            </tr>
+            <tr>
+                <td>Preço de Venda</td>
+                <td>{{ detalhe.preco_venda_produto }}</td>
+            </tr>
+        </table>
+    {% endfor %}
+
+    <a href="{% url 'produto-list' %}">Voltar para Lista de Produtos</a>
+    <br>
+    <a href="{% url 'home' %}">Voltar</a>
+</body>
+</html>
