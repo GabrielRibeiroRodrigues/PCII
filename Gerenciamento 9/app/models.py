@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
+
 class Instituic(models.Model):
     razao_social = models.CharField(max_length=100)
     nome_fantasia = models.CharField(max_length=100)
@@ -191,9 +192,6 @@ class ProdutoMovimentoItem(models.Model):
         return f"{self.id_produto_saida.produto.nome_produto} -> {self.id_produto.produto.nome_produto}"
     
 #CRIANDO USUARIO
-
-from django.contrib.auth.models import AbstractUser
-from django.db import models
 
 class CustomUser(AbstractUser):
     subsetor = models.ForeignKey('Subsector', on_delete=models.SET_NULL, null=True, blank=True)

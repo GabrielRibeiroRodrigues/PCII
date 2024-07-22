@@ -2,23 +2,68 @@
 <html>
 <head>
     <title>Menu</title>
-    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .content {
+            padding: 20px;
+            margin-top: 50px; /* Add a top margin to avoid content overlay */
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        li a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        li a:hover {
+            color: #0000ff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Menu</h1>
-    <ul>
-        <li><a href="{% url 'produto-create' %}">Criar Produto</a></li>
-        <li><a href="{% url 'produto-list' %}">Listar Produtos</a></li>             
-        <li><a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a></li>
-        <li><a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a></li>
-        <li><a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por embalagem</a></li>
-        <li><a href="{% url 'produtos-por-fabricante' %}">Gerenciar por fabricante</a></li>
-        <li><a href="{% url 'produtos-por-transacao' %}">Gerenciar por transacao</a></li>
-        <li><a href="{% url 'marca-list' %}">Gerenciar por marcas</a></li>
-        <li><a href="{% url 'transacoes-tipos' %}">Transacoes   </a></li>
-        
-        
-        
-    </ul>
+    <div class="navbar">
+        <a href="{% url 'produto-create' %}">Criar Produto</a>
+        <a href="{% url 'produto-list' %}">Listar Produtos</a>
+        <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
+        <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
+        <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por embalagem</a>
+        <a href="{% url 'produtos-por-fabricante' %}">Gerenciar por fabricante</a>
+        <a href="{% url 'produtos-por-transacao' %}">Gerenciar por transação</a>
+        <a href="{% url 'marca-list' %}">Gerenciar por marcas</a>
+        <a href="{% url 'transacoes-tipos' %}">Transações</a>
+    </div>
+
 </body>
 </html>
