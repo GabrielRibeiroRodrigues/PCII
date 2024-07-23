@@ -4,7 +4,7 @@ from django.views.generic import *
 from .models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 @login_required
 def home(request):
     return render(request, 'home.html')
@@ -48,7 +48,11 @@ class MovimentacaoListView(ListView):
     model = MovimentacaoProduto
     template_name = 'movimentacao_list.html'
 #FUNCÃO PARA SELECIONAR SUB SETORES PARA MOVIMENTACAO DE PRODUTOS
+@login_required
 def select_subsectors_movimentacoes(request):
+    user = request.user
+    subsetor_origem = user.subsetor if user.subsetor else None
+    
     if request.method == "POST":
         form = SubsectorSelecttForm(request.POST)
         if form.is_valid():
@@ -56,7 +60,9 @@ def select_subsectors_movimentacoes(request):
             subsector_destino = form.cleaned_data['subsetor_destino']
             return redirect('select_products', origem_id=subsector_origem.id, destino_id=subsector_destino.id)
     else:
-        form = SubsectorSelecttForm()
+        initial_data = {'subsetor_origem': subsetor_origem}
+        form = SubsectorSelecttForm(initial=initial_data)
+    
     return render(request, 'select_subsectors.html', {'form': form})
 #FUNCÃO PARA SELECIONAR PRODUTOS DEPEDENDO DO SUBSETOR 
 def select_products(request, origem_id, destino_id):
@@ -109,21 +115,23 @@ class ProdutosPorSetorListView(ListView):
         return context
 #LISTA DE PRODUTOS POR SUB SETOR
 
-class ProdutosPorSubsetorListView(ListView):
+class ProdutosPorSubsetorListView(LoginRequiredMixin, ListView):
     model = DetalheProduto
     template_name = 'produtos_por_subsetor.html'
     context_object_name = 'produtos_por_subsetor'
 
     def get_queryset(self):
-        subsetor_id = self.request.GET.get('subsetor')
-        if subsetor_id:
-            return DetalheProduto.objects.filter(subsetor_id=subsetor_id)
+        user = self.request.user
+        subsetor = user.subsetor
+        if subsetor:
+            return DetalheProduto.objects.filter(subsetor=subsetor)
         return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = SubsectorSelectForm(self.request.GET or None)
         context['form'] = form
+        context['subsetor'] = self.request.user.subsetor  
         return context
 #LISTAS DE PRODUTOS FILTRADOS POR EMBALAGEM 
 class ProdutosPorTipoEmbalagemListView(ListView):
@@ -220,26 +228,26 @@ def selecionar_subsetor_adicao(request):
 
 #ADICIONAR PRODUTO NO ESTOQUE
 def adicionar_produto_estoque(request, subsetor_id):
-    subsetor = get_object_or_404(Subsector, id=subsetor_id)
-    produtos_disponiveis = DetalheProduto.objects.filter(subsetor=subsetor)
+    subsetor_origem = get_object_or_404(Subsector, id=subsetor_id)
+    subsetor_destino = subsetor_origem  # O destino é o mesmo subsetor para adição ao estoque
+    produtos_disponiveis = DetalheProduto.objects.filter(subsetor=subsetor_origem)
     
     if request.method == "POST":
-        form = MovimentacaoForm_Completo(request.POST, subsetor_origem=subsetor)
+        form = MovimentacaoForm_Completo(request.POST)
         if form.is_valid():
             movimentacao = form.save(commit=False)
-            movimentacao.subsector_origem = subsetor
-            movimentacao.subsector_destino = subsetor  # No destino é o mesmo setor para adição ao estoque
+            movimentacao.subsector_origem = subsetor_origem
+            movimentacao.subsector_destino = subsetor_destino
             movimentacao.save()
             return redirect('movimentacao_success')
     else:
-        form = MovimentacaoForm_Completo(subsetor_origem=subsetor)
+        form = MovimentacaoForm_Completo()
     
-    return render(request, 'adicionar_produto_estoque.html', {
+    return render(request, 'selecionar_subsetor_adicao.html', {
         'form': form,
         'produtos_disponiveis': produtos_disponiveis,
-        'subsetor': subsetor
+        'subsetor': subsetor_origem
     })
-
 #TESTE DE USUARIO LOGADO
 def user_subsetor_view(request):
     user = request.user

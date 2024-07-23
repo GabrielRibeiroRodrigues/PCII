@@ -4,11 +4,15 @@
     <title>Select Subsector</title>
 </head>
 <body>
-    <h1>Selecionar Subsetores</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Próximo</button>
-    </form>
+    <div class="form-container">
+        <h2>Selecione Subsetores para Movimentação</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Selecionar Produtos</button>
+        </form>
+    </div>
 </body>
+
+
 </html>

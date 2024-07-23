@@ -1,66 +1,100 @@
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Produtos por Subsetor</title>
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            table, th, td {
-                border: 1px solid black;
-            }
-            th, td {
-                padding: 8px;
-                text-align: left;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Produtos por Subsetor</h1>
-        
-        <form method="get">
-            {{ form.as_p }}
-            <button type="submit">Filtrar</button>
-        </form>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Produtos por Subsetor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .info-container {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 0 auto;
+        }
+        .form-container button {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-container">
+        <h1>Informações do Usuário</h1>
+        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>
+        <p><strong>Subsetor:</strong> {{ subsetor }}</p>
+    </div>
 
-        <table>
+   
+
+    <h1>Produtos por Subsetor</h1>
+    <table>
+        <tr>
+            <th>Nome do Produto</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Fabricante</th>
+            <th>Cor</th>
+            <th>Sabor</th>
+            <th>Quantidade na Embalagem</th>
+            <th>Tipo de Embalagem</th>
+            <th>Quantidade</th>
+            <th>Preço de Custo</th>
+            <th>Preço de Venda</th>
+        </tr>
+        {% for produto in produtos_por_subsetor %}
             <tr>
-                <th>Nome do Produto</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Fabricante</th>
-                <th>Cor</th>
-                <th>Sabor</th>
-                <th>Quantidade na Embalagem</th>
-                <th>Tipo de Embalagem</th>
-                <th>Quantidade</th>
-                <th>Preço de Custo</th>
-                <th>Preço de Venda</th>
+                <td>{{ produto.produto.nome_produto }}</td>
+                <td>{{ produto.produto.marca.nome_marca }}</td>
+                <td>{{ produto.produto.modelo.nome_modelo }}</td>
+                <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
+                <td>{{ produto.cor_produto }}</td>
+                <td>{{ produto.sabor_produto }}</td>
+                <td>{{ produto.quantidade_embalagem_produto }}</td>
+                <td>{{ produto.tipo_embalagem_produto.nome_embalagem }}</td>
+                <td>{{ produto.quantidade_produto }}</td>
+                <td>{{ produto.preco_custo_produto }}</td>
+                <td>{{ produto.preco_venda_produto }}</td>
             </tr>
-            {% for produto in produtos_por_subsetor %}
-                <tr>
-                    <td>{{ produto.produto.nome_produto }}</td>
-                    <td>{{ produto.produto.marca.nome_marca }}</td>
-                    <td>{{ produto.produto.modelo.nome_modelo }}</td>
-                    <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
-                    <td>{{ produto.cor_produto }}</td>
-                    <td>{{ produto.sabor_produto }}</td>
-                    <td>{{ produto.quantidade_embalagem_produto }}</td>
-                    <td>{{ produto.tipo_embalagem_produto.nome_embalagem }}</td>
-                    <td>{{ produto.quantidade_produto }}</td>
-                    <td>{{ produto.preco_custo_produto }}</td>
-                    <td>{{ produto.preco_venda_produto }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="11">Nenhum produto encontrado para este subsetor.</td>
-                </tr>
-            {% endfor %}
-        </table>
-        <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
-    </body>
-    </html>
+        {% empty %}
+            <tr>
+                <td colspan="11">Nenhum produto encontrado para este subsetor.</td>
+            </tr>
+        {% endfor %}
+    </table>
+    
+    <a href="{% url 'home' %}" class="back-link">Voltar para a Página Inicial</a>
+</body>
+</html>

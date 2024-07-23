@@ -14,22 +14,17 @@ class DetalheProdutoForm(forms.ModelForm):
         fields = ['unidade_produto', 'cor_produto', 'sabor_produto', 'quantidade_embalagem_produto', 'tipo_embalagem_produto', 'quantidade_produto', 'preco_custo_produto', 'preco_venda_produto', 'subsetor']
 
 #FORMULARIO PARA CRIAR MOVIMENTACOEES
+
+from django import forms
+from .models import MovimentacaoProduto
+
 class MovimentacaoForm_Completo(forms.ModelForm):
     class Meta:
         model = MovimentacaoProduto
-        fields = ['data_hora_movimentacao', 'detalhe_produto', 'quantidade_movimentada', 'transacao']
-        widgets = {
-            'data_hora_movimentacao': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'quantidade_movimentada': forms.NumberInput(attrs={'min': 1}),
-        }
+        fields = ['detalhe_produto', 'quantidade_movimentada', 'transacao']  # Exclua subsetor_origem e subsetor_destino
 
     def __init__(self, *args, **kwargs):
-        subsetor_origem = kwargs.pop('subsetor_origem', None)
         super(MovimentacaoForm_Completo, self).__init__(*args, **kwargs)
-        if subsetor_origem:
-            self.fields['detalhe_produto'].queryset = DetalheProduto.objects.filter(subsetor=subsetor_origem)
-        else:
-            self.fields['detalhe_produto'].queryset = DetalheProduto.objects.none()
 #FORMULARIO PARA LISTA DE PRODUTOS POR SUB SETOR
 class SubsectorSelectForm(forms.Form):
     subsetor = forms.ModelChoiceField(queryset=Subsector.objects.all(), label="Selecionar Subsetor")
@@ -55,9 +50,19 @@ class TransacaoSelectForm(forms.Form):
     transacao = forms.ModelChoiceField(queryset=Transaction.objects.all(), required=False, label='Selecione a Transação')
 
 #FORMULARIO PARA PARA SELECIONAR SUB SETORES PARA MOVIMENTACAO DE PRODUTOS
+
 class SubsectorSelecttForm(forms.Form):
     subsetor_origem = forms.ModelChoiceField(queryset=Subsector.objects.all(), label="Subsetor de Origem")
     subsetor_destino = forms.ModelChoiceField(queryset=Subsector.objects.all(), label="Subsetor de Destino")
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(SubsectorSelecttForm, self).__init__(*args, **kwargs)
+        if user and user.subsetor:
+            self.fields['subsetor_origem'].initial = user.subsetor
+            self.fields['subsetor_origem'].widget.attrs['readonly'] = True
+            self.fields['subsetor_origem'].widget.attrs['disabled'] = True
+
 
 
 #FORMULARIO PARA SELECIONAR INSTITUIÇÃO

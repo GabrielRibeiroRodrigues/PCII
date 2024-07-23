@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import *
+from .models import CustomUser
 
-# Registrando modelos normais
 admin.site.register(Produto)
 admin.site.register(DetalheProduto)
 admin.site.register(TipoEmbalagem)
@@ -23,8 +23,6 @@ admin.site.register(Subtipo)
 admin.site.register(MovimentacaoProduto)
 admin.site.register(ProdutoMovimentoItem)
 
-# Importar CustomUser do models.py
-from .models import CustomUser
 
 class CustomUserAdmin(BaseUserAdmin):
     model = CustomUser

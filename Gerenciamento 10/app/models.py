@@ -142,6 +142,7 @@ class DetalheProduto(models.Model):
 
     def __str__(self):
         return f"{self.produto.nome_produto} - {self.subsetor.nome_sub_setor}"
+    
 
 class MovimentacaoProduto(models.Model):
     data_hora_movimentacao = models.DateTimeField(default=timezone.now)
