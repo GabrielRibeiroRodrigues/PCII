@@ -97,7 +97,7 @@ class MovimentacaoCreateView(CreateView):
 
 
 #LISTA DE PRODUTOS POR SETOR
-class ProdutosPorSetorListView(ListView):
+class ProdutosPorSetorListView(LoginRequiredMixin, ListView):
     model = Produto
     template_name = 'produtos_por_setor.html'
     context_object_name = 'produtos_por_setor'
@@ -111,7 +111,11 @@ class ProdutosPorSetorListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = sectorSelectForm(self.request.GET)
+        user = self.request.user
+        setor = user.subsetor.setor if user.subsetor else None
+        initial_data = {'setor': setor} if setor else {}
+        context['form'] = SectorSelectForm(self.request.GET or None, initial=initial_data)
+        context['setor'] = setor
         return context
 #LISTA DE PRODUTOS POR SUB SETOR
 
@@ -233,7 +237,7 @@ def adicionar_produto_estoque(request, subsetor_id):
     produtos_disponiveis = DetalheProduto.objects.filter(subsetor=subsetor_origem)
     
     if request.method == "POST":
-        form = MovimentacaoForm_Completo(request.POST)
+        form = MovimentacaoForm_Completo(request.POST, subsetor_origem=subsetor_origem, subsetor_destino=subsetor_destino)
         if form.is_valid():
             movimentacao = form.save(commit=False)
             movimentacao.subsector_origem = subsetor_origem
@@ -241,8 +245,15 @@ def adicionar_produto_estoque(request, subsetor_id):
             movimentacao.save()
             return redirect('movimentacao_success')
     else:
-        form = MovimentacaoForm_Completo()
+        form = MovimentacaoForm_Completo(subsetor_origem=subsetor_origem, subsetor_destino=subsetor_destino)
     
+    return render(request, 'selecionar_subsetor_adicao.html', {
+        'form': form,
+        'produtos_disponiveis': produtos_disponiveis,
+        'subsetor': subsetor_origem
+    })
+
+
     return render(request, 'selecionar_subsetor_adicao.html', {
         'form': form,
         'produtos_disponiveis': produtos_disponiveis,

@@ -15,16 +15,23 @@ class DetalheProdutoForm(forms.ModelForm):
 
 #FORMULARIO PARA CRIAR MOVIMENTACOEES
 
-from django import forms
-from .models import MovimentacaoProduto
-
 class MovimentacaoForm_Completo(forms.ModelForm):
+    subsetor_origem = forms.CharField(widget=forms.HiddenInput(), required=False)
+    subsetor_destino = forms.CharField(widget=forms.HiddenInput(), required=False)
+
     class Meta:
         model = MovimentacaoProduto
         fields = ['detalhe_produto', 'quantidade_movimentada', 'transacao']  # Exclua subsetor_origem e subsetor_destino
 
     def __init__(self, *args, **kwargs):
+        subsetor_origem = kwargs.pop('subsetor_origem', None)
+        subsetor_destino = kwargs.pop('subsetor_destino', None)
         super(MovimentacaoForm_Completo, self).__init__(*args, **kwargs)
+        if subsetor_origem:
+            self.fields['subsetor_origem'].initial = subsetor_origem.id
+        if subsetor_destino:
+            self.fields['subsetor_destino'].initial = subsetor_destino.id
+
 #FORMULARIO PARA LISTA DE PRODUTOS POR SUB SETOR
 class SubsectorSelectForm(forms.Form):
     subsetor = forms.ModelChoiceField(queryset=Subsector.objects.all(), label="Selecionar Subsetor")
@@ -76,3 +83,6 @@ class CustomUserForm(forms.ModelForm):
         fields = ['username', 'email', 'subsetor']
 
 
+#TESTE
+class SectorSelectForm(forms.Form):
+    setor = forms.ModelChoiceField(queryset=Sector.objects.all(), label="Setor")

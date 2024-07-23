@@ -3,6 +3,12 @@
 <head>
     <title>Produtos por Setor</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .info-container {
+            margin-bottom: 20px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -17,21 +23,43 @@
         th {
             background-color: #f2f2f2;
         }
-        .errorlist {
-            display: none;
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 0 auto;
+        }
+        .form-container button {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <div class="info-container">
+        <h1>Informações do Usuário</h1>
+        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>
+        <p><strong>Setor:</strong> {{ setor.nome_setor }}</p>
+    </div>
+
+   
+    
     <h1>Produtos por Setor</h1>
-    
-    <form method="get">
-        {{ form.as_p }}
-        <button type="submit">Filtrar</button>
-    </form>
-    
-    <h2>Setor: {{ setor.nome_setor }}</h2>
-    
     <table>
         <tr>
             <th>Nome do Produto</th>
@@ -41,19 +69,22 @@
             <th>Subsetor</th>
         </tr>
         {% for produto in produtos_por_setor %}
-            <tr>
-                <td>{{ produto.nome_produto }}</td>
-                <td>{{ produto.marca.nome_marca }}</td>
-                <td>{{ produto.modelo.nome_modelo }}</td>
-                <td>{{ produto.fabricante.nome_fabricante }}</td>
-                <td>{{ produto.detalhes.first.subsetor.nome_sub_setor }}</td> 
-            </tr>
+            {% for detalhe in produto.detalhes.all %}
+                <tr>
+                    <td>{{ produto.nome_produto }}</td>
+                    <td>{{ produto.marca.nome_marca }}</td>
+                    <td>{{ produto.modelo.nome_modelo }}</td>
+                    <td>{{ produto.fabricante.nome_fabricante }}</td>
+                    <td>{{ detalhe.subsetor.nome_sub_setor }}</td>
+                </tr>
+            {% endfor %}
         {% empty %}
             <tr>
                 <td colspan="5">Nenhum produto encontrado para este setor.</td>
             </tr>
         {% endfor %}
     </table>
-    <a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+    
+    <a href="{% url 'home' %}" class="back-link">Voltar para a Página Inicial</a>
 </body>
 </html>

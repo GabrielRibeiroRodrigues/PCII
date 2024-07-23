@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,6 +18,8 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
         }
         .info-container h2 {
             margin-top: 0;
@@ -33,9 +34,23 @@
 <body>
     <div class="info-container">
         <h2>Informações do Usuário</h2>
-        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>
-        <p><strong>Subsetor:</strong> {{ subsetor }}</p>
+        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>    
 
+        {% if subsetor %}
+            <p><strong>Subsetor:</strong> {{ subsetor.nome_sub_setor }}</p>
+            {% if subsetor.setor %}
+                <p><strong>Setor:</strong> {{ subsetor.setor.nome_setor }}</p>
+                {% if subsetor.setor.super_setor %}
+                    <p><strong>Super Setor:</strong> {{ subsetor.setor.super_setor.nome_super_setor }}</p>
+                {% else %}
+                    <p><strong>Super Setor:</strong> Nenhum super setor associado</p>
+                {% endif %}
+            {% else %}
+                <p><strong>Setor:</strong> Nenhum setor associado</p>
+            {% endif %}
+        {% else %}
+            <p><strong>Subsetor:</strong> Nenhum subsetor associado</p>
+        {% endif %}
     </div>
 </body>
 </html>
