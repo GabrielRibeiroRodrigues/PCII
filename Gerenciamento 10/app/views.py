@@ -98,25 +98,22 @@ class MovimentacaoCreateView(CreateView):
 
 #LISTA DE PRODUTOS POR SETOR
 class ProdutosPorSetorListView(LoginRequiredMixin, ListView):
-    model = Produto
+    model = DetalheProduto
     template_name = 'produtos_por_setor.html'
     context_object_name = 'produtos_por_setor'
 
     def get_queryset(self):
-        queryset = Produto.objects.all()
-        setor_id = self.request.GET.get('setor')
-        if setor_id:
-            queryset = queryset.filter(detalhes__subsetor__setor__id=setor_id)
-        return queryset
+        user = self.request.user
+        setor = user.subsetor.setor if user.subsetor else None
+        if setor:
+            return DetalheProduto.objects.filter(subsetor__setor=setor)
+        return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-        setor = user.subsetor.setor if user.subsetor else None
-        initial_data = {'setor': setor} if setor else {}
-        context['form'] = SectorSelectForm(self.request.GET or None, initial=initial_data)
-        context['setor'] = setor
+        context['setor'] = self.request.user.subsetor.setor if self.request.user.subsetor else None
         return context
+
 #LISTA DE PRODUTOS POR SUB SETOR
 
 class ProdutosPorSubsetorListView(LoginRequiredMixin, ListView):

@@ -5,86 +5,168 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
         .info-container {
-            margin-bottom: 20px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
         }
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
         th, td {
-            padding: 8px;
+            padding: 12px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
         }
         .form-container {
-            margin-bottom: 20px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         .form-container form {
             display: flex;
             flex-direction: column;
-            width: 300px;
+            width: 100%;
+            max-width: 400px;
             margin: 0 auto;
         }
         .form-container button {
             margin-top: 10px;
-            padding: 8px;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         .form-container button:hover {
             background-color: #45a049;
         }
         .back-link {
             display: block;
-            margin-top: 20px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
             text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: #3f3f3f;
+        }
+        .container {
+            padding: 20px;
+            margin: auto;
+            max-width: 1200px;
+            margin-top: 90px;   
+        }
+        h1 {
+            color: #333;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 4px;
+            margin: 8px;
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
         }
     </style>
 </head>
 <body>
-    <div class="info-container">
-        <h1>Informações do Usuário</h1>
-        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>
-        <p><strong>Setor:</strong> {{ setor.nome_setor }}</p>
+    <div class="navbar">
+        <a href="{% url 'produto-create' %}">Criar Produto</a>
+        <a href="{% url 'produto-list' %}">Listar Produtos</a>
+        <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
+        <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
+        <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por Embalagem</a>
+        <a href="{% url 'produtos-por-fabricante' %}">Gerenciar por Fabricante</a>
+        <a href="{% url 'produtos-por-transacao' %}">Gerenciar por Transação</a>
+        <a href="{% url 'marca-list' %}">Gerenciar por Marcas</a>
+        <a href="{% url 'transacoes-tipos' %}">Transações</a>
+        <a href="{% url 'user_subsetor' %}">Teste Usuário</a>
     </div>
 
-   
-    
-    <h1>Produtos por Setor</h1>
-    <table>
-        <tr>
-            <th>Nome do Produto</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Fabricante</th>
-            <th>Subsetor</th>
-        </tr>
-        {% for produto in produtos_por_setor %}
-            {% for detalhe in produto.detalhes.all %}
+    <div class="container">
+        <div class="info-container">
+            <h1>Informações do Usuário</h1>
+            <p><strong>Nome de usuário:</strong> {{ user.username }}</p>
+            <p><strong>Setor:</strong> {{ setor }}</p>
+        </div>
+        <h1>Produtos por Setor</h1>
+        <table>
+            <tr>
+                <th>Nome do Produto</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Fabricante</th>
+                <th>Cor</th>
+                <th>Sabor</th>
+                <th>Quantidade na Embalagem</th>
+                <th>Tipo de Embalagem</th>
+                <th>Quantidade</th>
+                <th>Preço de Custo</th>
+                <th>Preço de Venda</th>
+                <th>Subsetor</th> <!-- Nova coluna para o subsetor -->
+            </tr>
+            {% for produto in produtos_por_setor %}
                 <tr>
-                    <td>{{ produto.nome_produto }}</td>
-                    <td>{{ produto.marca.nome_marca }}</td>
-                    <td>{{ produto.modelo.nome_modelo }}</td>
-                    <td>{{ produto.fabricante.nome_fabricante }}</td>
-                    <td>{{ detalhe.subsetor.nome_sub_setor }}</td>
+                    <td>{{ produto.produto.nome_produto }}</td>
+                    <td>{{ produto.produto.marca.nome_marca }}</td>
+                    <td>{{ produto.produto.modelo.nome_modelo }}</td>
+                    <td>{{ produto.produto.fabricante.nome_fabricante }}</td>
+                    <td>{{ produto.cor_produto }}</td>
+                    <td>{{ produto.sabor_produto }}</td>
+                    <td>{{ produto.quantidade_embalagem_produto }}</td>
+                    <td>{{ produto.tipo_embalagem_produto.nome_embalagem }}</td>
+                    <td>{{ produto.quantidade_produto }}</td>
+                    <td>{{ produto.preco_custo_produto }}</td>
+                    <td>{{ produto.preco_venda_produto }}</td>
+                    <td>{{ produto.subsetor.nome_sub_setor }}</td> <!-- Exibe o nome do subsetor -->
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="12">Nenhum produto encontrado para este setor.</td>
                 </tr>
             {% endfor %}
-        {% empty %}
-            <tr>
-                <td colspan="5">Nenhum produto encontrado para este setor.</td>
-            </tr>
-        {% endfor %}
-    </table>
-    
-    <a href="{% url 'home' %}" class="back-link">Voltar para a Página Inicial</a>
+        </table>
+
+        <a href="{% url 'home' %}" class="back-link">Voltar para a Página Inicial</a>
+    </div>
 </body>
 </html>

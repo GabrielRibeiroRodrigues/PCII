@@ -37,8 +37,8 @@ class SubsectorSelectForm(forms.Form):
     subsetor = forms.ModelChoiceField(queryset=Subsector.objects.all(), label="Selecionar Subsetor")
 
 #FORMULARIO PARA LISTA DE PRODUTOS POR SETOR
-class sectorSelectForm(forms.Form):
-            setor = forms.ModelChoiceField(queryset=Sector.objects.all(), label="Selecionar setor")
+class SectorSelectForm(forms.Form):
+    setor = forms.ModelChoiceField(queryset=Sector.objects.all(), label="Selecionar setor")
 
 #FORMULARIO PARA LISTA DE PRODUTOS POR EMBALAGEM
 class TipoEmbalagemSelectForm(forms.Form):

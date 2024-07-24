@@ -19,8 +19,7 @@ urlpatterns = [
     #VER LISTA DE MOVIMENTAÇÕES 
     path('movimentacao_list/', views.MovimentacaoListView.as_view(), name='movimentacao_list'),
     #VER LISTA DE PRODUTOS POR SETOR (Preciso  criar o filtro pra selecionar o setor ainda)   
-    path('setor/<int:setor_id>/produtos/', views.ProdutosPorSetorListView.as_view(), name='produtos-por-setor'),
-
+    path('setor/<int:setor_id>/produtos/', ProdutosPorSetorListView.as_view(), name='produtos-por-setor'),
     #VER LISTA DE PRODUTOS POR SUBSETOR
     path('subsetor/<int:subsetor_id>/produtos/', views.ProdutosPorSubsetorListView.as_view(), name='produtos-por-subsetor'),
     
