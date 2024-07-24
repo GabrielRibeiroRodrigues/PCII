@@ -35,9 +35,25 @@ class ProdutoCreateView(CreateView):
         else:
             return self.render_to_response(self.get_context_data(form=form))
 #LISTA DE PRODUTOS
-class ProdutoListView(ListView):
-        model = Produto
-        template_name = 'produto_list.html'
+class ProdutoListView(LoginRequiredMixin, ListView):
+    model = Produto
+    template_name = 'produto_list.html'
+    context_object_name = 'object_list'
+
+    def get_queryset(self):
+        user = self.request.user
+        subsetor = user.subsetor
+        if subsetor:
+            return Produto.objects.filter(detalhes__subsetor=subsetor).distinct()
+        return Produto.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        subsetor = user.subsetor
+        context['user'] = user
+        context['subsetor'] = subsetor
+        return context
 #DETALHES DO PRODUTO
 class ProdutoDetailView(DetailView):
     model = Produto

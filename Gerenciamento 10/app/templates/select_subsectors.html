@@ -1,18 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Select Subsector</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar Subsetores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            box-sizing: border-box;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 4px;
+            margin: 8px;
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .content {
+            padding: 20px;
+            margin-top: 70px; /* Espaço suficiente para a navbar fixa */
+        }
+        .form-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        form input, form select, form button {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        form button {
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Selecione Subsetores para Movimentação</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Selecionar Produtos</button>
-        </form>
+    <div class="navbar">
+        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
+        <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
+        <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por Embalagem</a>
+        <a href="{% url 'produtos-por-fabricante' %}">Gerenciar por Fabricante</a>
+        <a href="{% url 'produtos-por-transacao' %}">Gerenciar por Transação</a>
+        <a href="{% url 'marca-list' %}">Gerenciar por Marcas</a>
+        <a href="{% url 'transacoes-tipos' %}">Transações</a>
+    </div>
+
+    <div class="content">
+        <div class="form-container">
+            <h2>Selecione Subsetores para Movimentação</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Selecionar Produtos</button>
+            </form>
+        </div>
     </div>
 </body>
-
-
 </html>
