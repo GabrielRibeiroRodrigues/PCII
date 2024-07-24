@@ -158,8 +158,13 @@ class ProdutosPorTipoEmbalagemListView(ListView):
 
     def get_queryset(self):
         tipo_embalagem_id = self.request.GET.get('tipo_embalagem')
-        if tipo_embalagem_id:
-            return DetalheProduto.objects.filter(tipo_embalagem_produto_id=tipo_embalagem_id)
+        user_subsector = self.request.user.subsetor
+        
+        if tipo_embalagem_id and user_subsector:
+            return DetalheProduto.objects.filter(
+                tipo_embalagem_produto_id=tipo_embalagem_id,
+                subsetor=user_subsector
+            )
         return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
@@ -175,8 +180,13 @@ class ProdutosPorFabricanteListView(ListView):
 
     def get_queryset(self):
         fabricante_id = self.request.GET.get('fabricante')
-        if fabricante_id:
-            return DetalheProduto.objects.filter(produto__fabricante_id=fabricante_id)
+        user_subsector = self.request.user.subsetor
+
+        if fabricante_id and user_subsector:
+            return DetalheProduto.objects.filter(
+                produto__fabricante_id=fabricante_id,
+                subsetor=user_subsector
+            )
         return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
@@ -186,16 +196,21 @@ class ProdutosPorFabricanteListView(ListView):
         return context
 #LISTAS DE PRODUTOS FILTRADOS POR TIPO DE TRANSAÇÃO
 class ProdutosPorTransacaoListView(ListView):
-    model = MovimentacaoProduto
+    model = DetalheProduto
     template_name = 'produtos_por_transacao.html'
     context_object_name = 'produtos_por_transacao'
 
     def get_queryset(self):
         transacao_id = self.request.GET.get('transacao')
-        if transacao_id:
-            movimentacoes = MovimentacaoProduto.objects.filter(transacao_id=transacao_id)
-            return [movimentacao.detalhe_produto for movimentacao in movimentacoes]
-        return MovimentacaoProduto.objects.none()
+        user_subsector = self.request.user.subsetor
+
+        if transacao_id and user_subsector:
+            movimentacoes = MovimentacaoProduto.objects.filter(
+                transacao_id=transacao_id,
+                subsector_origem=user_subsector
+            )
+            return DetalheProduto.objects.filter(id__in=[movimentacao.detalhe_produto.id for movimentacao in movimentacoes])
+        return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
