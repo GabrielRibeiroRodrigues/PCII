@@ -226,8 +226,13 @@ class ProdutosPorMarcaListView(ListView):
 
     def get_queryset(self):
         marca_id = self.request.GET.get('marca')
-        if marca_id:
-            return DetalheProduto.objects.filter(produto__marca_id=marca_id)
+        user_subsector = self.request.user.subsetor
+
+        if marca_id and user_subsector:
+            return DetalheProduto.objects.filter(
+                produto__marca_id=marca_id,
+                subsetor=user_subsector
+            )
         return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
@@ -235,6 +240,7 @@ class ProdutosPorMarcaListView(ListView):
         form = MarcaSelectForm(self.request.GET or None)
         context['form'] = form
         return context
+
 
 
 #FUNÇÃO PARA CONFIRMAÇÃO DE MOVIMENTACAO
