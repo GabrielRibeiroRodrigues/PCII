@@ -29,6 +29,8 @@ class MovimentacaoForm_Completo(forms.ModelForm):
         super(MovimentacaoForm_Completo, self).__init__(*args, **kwargs)
         if subsetor_origem:
             self.fields['subsetor_origem'].initial = subsetor_origem.id
+            # Filtrando o queryset de detalhe_produto com base no subsetor_origem
+            self.fields['detalhe_produto'].queryset = DetalheProduto.objects.filter(subsetor=subsetor_origem)
         if subsetor_destino:
             self.fields['subsetor_destino'].initial = subsetor_destino.id
 
@@ -67,8 +69,7 @@ class SubsectorSelecttForm(forms.Form):
         super(SubsectorSelecttForm, self).__init__(*args, **kwargs)
         if user and user.subsetor:
             self.fields['subsetor_origem'].initial = user.subsetor
-            self.fields['subsetor_origem'].widget.attrs['readonly'] = True
-            self.fields['subsetor_origem'].widget.attrs['disabled'] = True
+            self.fields['subsetor_destino'].initial = user.subsetor 
 
 
 

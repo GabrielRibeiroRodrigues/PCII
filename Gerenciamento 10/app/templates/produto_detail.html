@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     {% load static %}
     <title>{% block title %}Detalhes do Produto{% endblock %}</title>
@@ -37,7 +37,7 @@
         }
         .content {
             padding: 20px;
-            margin-top: 90px; /* Add a top margin to avoid content overlay */
+            margin-top: 90px; /* Espaço suficiente para a navbar fixa */
         }
         h1, h2 {
             color: #333;
@@ -69,7 +69,7 @@
         }
         a:hover {
             background-color: #3f3f3f;
-        }   
+        }
         .action-links {
             text-align: center;
             margin-top: 20px;
@@ -155,6 +155,8 @@
                     <td>{{ detalhe.preco_venda_produto }}</td>
                 </tr>
             </table>
+        {% empty %}
+            <p>Não há detalhes adicionais para este produto.</p>
         {% endfor %}
 
         <div class="action-links">
