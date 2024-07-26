@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos por Tipo de Embalagem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.navbar a {
+    float: left;
+    display: block;
+    color: #fff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 4px;
+    margin: 8px;
+
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .content {
+            padding: 20px;
+            margin-top: 90px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .action-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .container {
+            max-width: 1000px; /* Ajuste a largura máxima da página */
+            margin: 0 auto; /* Centraliza o conteúdo */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'produto-create' %}">Criar Produto</a>
+        <a href="{% url 'produto-list' %}">Listar Produtos</a>
+        <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
+        <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
+        <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por Embalagem</a>
+        <a href="{% url 'produtos-por-fabricante' %}">Gerenciar por Fabricante</a>
+        <a href="{% url 'produtos-por-transacao' %}">Gerenciar por Transação</a>
+        <a href="{% url 'marca-list' %}">Gerenciar por Marcas</a>
+        <a href="{% url 'transacoes-tipos' %}">Transações</a>
+        <a href="{% url 'user_subsetor' %}">Teste Usuário</a>
+    </div>
+
+    <div class="content">
+        <h1>Produtos por Tipo de Embalagem</h1>
+
+        <form method="get">
+            {{ form.as_p }}
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Tipo de Embalagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos_por_tipo_embalagem %}
+                <tr>
+                    <td>{{ produto.produto.nome_produto }}</td>
+                    <td>{{ produto.quantidade_produto }}</td>
+                    <td>{{ produto.tipo_embalagem_produto.nome_embalagem }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center;">Nenhum produto encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

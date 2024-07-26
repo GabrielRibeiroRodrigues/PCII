@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subsetor do Usuário</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .info-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        .info-container h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .info-container p {
+            font-size: 16px;
+            color: #666;
+        }
+        .navbar {
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.navbar a {
+    float: left;
+    display: block;
+    color: #fff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 4px;
+    margin: 8px;
+
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'produto-create' %}">Criar Produto</a>
+        <a href="{% url 'produto-list' %}">Listar Produtos</a>
+        <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
+        <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
+        <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por Embalagem</a>
+        <a href="{% url 'produtos-por-fabricante' %}">Gerenciar por Fabricante</a>
+        <a href="{% url 'produtos-por-transacao' %}">Gerenciar por Transação</a>
+        <a href="{% url 'marca-list' %}">Gerenciar por Marcas</a>
+        <a href="{% url 'transacoes-tipos' %}">Transações</a>
+        <a href="{% url 'user_subsetor' %}">Teste Usuário</a>
+    </div>
+    <div class="info-container">
+        <h2>Informações do Usuário</h2>
+        <p><strong>Nome de usuário:</strong> {{ user.username }}</p>    
+
+        {% if subsetor %}
+            <p><strong>Subsetor:</strong> {{ subsetor.nome_sub_setor }}</p>
+            {% if subsetor.setor %}
+                <p><strong>Setor:</strong> {{ subsetor.setor.nome_setor }}</p>
+                {% if subsetor.setor.super_setor %}
+                    <p><strong>Super Setor:</strong> {{ subsetor.setor.super_setor.nome_super_setor }}</p>
+                {% else %}
+                    <p><strong>Super Setor:</strong> Nenhum super setor associado</p>
+                {% endif %}
+            {% else %}
+                <p><strong>Setor:</strong> Nenhum setor associado</p>
+            {% endif %}
+        {% else %}
+            <p><strong>Subsetor:</strong> Nenhum subsetor associado</p>
+        {% endif %}
+    </div>
+</body>
+</html>
