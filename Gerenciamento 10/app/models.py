@@ -38,7 +38,6 @@ class Sector(models.Model):
 class Subsector(models.Model):
     setor = models.ForeignKey(Sector, related_name='sub_setores', on_delete=models.CASCADE)
     nome_sub_setor = models.CharField(max_length=100)
-    quantidade = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nome_sub_setor

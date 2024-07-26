@@ -35,6 +35,8 @@ class ProdutoCreateView(CreateView):
         else:
             return self.render_to_response(self.get_context_data(form=form))
 #LISTA DE PRODUTOS
+# views.py
+
 class ProdutoListView(LoginRequiredMixin, ListView):
     model = Produto
     template_name = 'produto_list.html'
@@ -54,17 +56,39 @@ class ProdutoListView(LoginRequiredMixin, ListView):
         context['user'] = user
         context['subsetor'] = subsetor
         return context
+
 #DETALHES DO PRODUTO
-class ProdutoDetailView(DetailView):
+class ProdutoDetailView(LoginRequiredMixin, DetailView):
     model = Produto
     template_name = 'produto_detail.html'
+    context_object_name = 'object'
+
+    def get_object(self, queryset=None):
+        produto = super().get_object(queryset)
+        user = self.request.user
+        subsetor = user.subsetor
+
+        
+        return produto
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        subsetor = user.subsetor
+
+        # Filtra detalhes do produto pelo subsetor do usuário
+        produto = self.get_object()
+        detalhes = produto.detalhes.filter(subsetor=subsetor)
+
+        context['detalhes'] = detalhes
+        return context
 
 #LISTA DE MOVIMENTAÇÕES
 class MovimentacaoListView(ListView):
     model = MovimentacaoProduto
     template_name = 'movimentacao_list.html'
 #FUNCÃO PARA SELECIONAR SUB SETORES PARA MOVIMENTACAO DE PRODUTOS
-@login_required
+@login_required 
 def select_subsectors_movimentacoes(request):
     user = request.user
     subsetor_origem = user.subsetor if user.subsetor else None
@@ -84,8 +108,6 @@ def select_subsectors_movimentacoes(request):
 def select_products(request, origem_id, destino_id):
     subsector_origem = get_object_or_404(Subsector, id=origem_id)
     subsector_destino = get_object_or_404(Subsector, id=destino_id)
-    
-    # Filtrando produtos disponíveis no subsetor de origem
     produtos_disponiveis = DetalheProduto.objects.filter(subsetor=subsector_origem)
 
     if request.method == "POST":
@@ -104,8 +126,7 @@ def select_products(request, origem_id, destino_id):
         'produtos_disponiveis': produtos_disponiveis,
         'subsector_origem': subsector_origem,
         'subsector_destino': subsector_destino
-    })
-   
+    })      
 #CRIANDO MOVIMENTAÇÕES DE PRODUTO
 class MovimentacaoCreateView(CreateView):
     model = MovimentacaoProduto
@@ -138,16 +159,20 @@ class ProdutosPorSetorListView(LoginRequiredMixin, ListView):
 class ProdutosPorSubsetorListView(LoginRequiredMixin, ListView):
     model = DetalheProduto
     template_name = 'produtos_por_subsetor.html'
-    context_object_name = 'produtos'
+    context_object_name = 'produtos_por_subsetor'
 
     def get_queryset(self):
-        # Filtrar produtos pelo subsetor do usuário logado
-        user_subsector = self.request.user.profile_user.subsector
-        return DetalheProduto.objects.filter(subsetor=user_subsector)
+        user = self.request.user
+        subsetor = user.subsetor
+        if subsetor:
+            return DetalheProduto.objects.filter(subsetor=subsetor)
+        return DetalheProduto.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subsector'] = self.request.user.profile_user.subsector
+        form = SubsectorSelectForm(self.request.GET or None)
+        context['form'] = form
+        context['subsetor'] = self.request.user.subsetor  
         return context
 #LISTAS DE PRODUTOS FILTRADOS POR EMBALAGEM 
 class ProdutosPorTipoEmbalagemListView(ListView):
@@ -252,27 +277,15 @@ def transacoes(request):
 
 
 #SELECIONAR SUB SETOR PARA ADICIONAR NO ESTOQUE
-@login_required
 def selecionar_subsetor_adicao(request):
-    user = request.user
-    subsetor_origem = user.subsetor if user.subsetor else None
-
     if request.method == "POST":
         form = SubsectorSelecttForm(request.POST)
         if form.is_valid():
             subsetor_origem = form.cleaned_data['subsetor_origem']
-            subsetor_destino = form.cleaned_data['subsetor_destino']
             return redirect('adicionar_produto_estoque', subsetor_id=subsetor_origem.id)
     else:
-        initial_data = {
-            'subsetor_origem': subsetor_origem,
-            'subsetor_destino': subsetor_origem  # Certifique-se de que o valor inicial está correto
-        }
-        form = SubsectorSelecttForm(initial=initial_data)
-
+        form = SubsectorSelecttForm()
     return render(request, 'selecionar_subsetor_adicao.html', {'form': form})
-
-
 
 
 #ADICIONAR PRODUTO NO ESTOQUE

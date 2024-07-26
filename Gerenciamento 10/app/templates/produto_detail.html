@@ -112,52 +112,54 @@
         </table>
 
         <h2>Detalhes Específicos</h2>
-        {% for detalhe in object.detalhes.all %}
-            <table>
-                <tr>
-                    <th>Campo</th>
-                    <th>Valor</th>
-                </tr>
-                <tr>
-                    <td>Subsetor</td>
-                    <td>{{ detalhe.subsetor.nome_sub_setor }}</td>
-                </tr>
-                <tr>
-                    <td>Unidade</td>
-                    <td>{{ detalhe.unidade_produto }}</td>
-                </tr>
-                <tr>
-                    <td>Cor</td>
-                    <td>{{ detalhe.cor_produto }}</td>
-                </tr>
-                <tr>
-                    <td>Sabor</td>
-                    <td>{{ detalhe.sabor_produto }}</td>
-                </tr>
-                <tr>
-                    <td>Quantidade na Embalagem</td>
-                    <td>{{ detalhe.quantidade_embalagem_produto }}</td>
-                </tr>
-                <tr>
-                    <td>Tipo de Embalagem</td>
-                    <td>{{ detalhe.tipo_embalagem_produto.nome_embalagem }}</td>
-                </tr>
-                <tr>
-                    <td>Quantidade</td>
-                    <td>{{ detalhe.quantidade_produto }}</td>
-                </tr>
-                <tr>
-                    <td>Preço de Custo</td>
-                    <td>{{ detalhe.preco_custo_produto }}</td>
-                </tr>
-                <tr>
-                    <td>Preço de Venda</td>
-                    <td>{{ detalhe.preco_venda_produto }}</td>
-                </tr>
-            </table>
-        {% empty %}
+        {% if detalhes %}
+            {% for detalhe in detalhes %}
+                <table>
+                    <tr>
+                        <th>Campo</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>Subsetor</td>
+                        <td>{{ detalhe.subsetor.nome_sub_setor }}</td>
+                    </tr>
+                    <tr>
+                        <td>Unidade</td>
+                        <td>{{ detalhe.unidade_produto }}</td>
+                    </tr>
+                    <tr>
+                        <td>Cor</td>
+                        <td>{{ detalhe.cor_produto }}</td>
+                    </tr>
+                    <tr>
+                        <td>Sabor</td>
+                        <td>{{ detalhe.sabor_produto }}</td>
+                    </tr>
+                    <tr>
+                        <td>Quantidade na Embalagem</td>
+                        <td>{{ detalhe.quantidade_embalagem_produto }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tipo de Embalagem</td>
+                        <td>{{ detalhe.tipo_embalagem_produto.nome_embalagem }}</td>
+                    </tr>
+                    <tr>
+                        <td>Quantidade</td>
+                        <td>{{ detalhe.quantidade_produto }}</td>
+                    </tr>
+                    <tr>
+                        <td>Preço de Custo</td>
+                        <td>{{ detalhe.preco_custo_produto }}</td>
+                    </tr>
+                    <tr>
+                        <td>Preço de Venda</td>
+                        <td>{{ detalhe.preco_venda_produto }}</td>
+                    </tr>
+                </table>
+            {% endfor %}
+        {% else %}
             <p>Não há detalhes adicionais para este produto.</p>
-        {% endfor %}
+        {% endif %}
 
         <div class="action-links">
             <a href="{% url 'produto-list' %}">Voltar para Lista de Produtos</a>

@@ -120,7 +120,7 @@
             <tbody>
                 {% for produto in object_list %}
                     <tr>
-                        <td>{{ produto.nome_produto }}</td>
+                        <td>{{ produto.nome_produto }} - {{ produto.marca }}</td>
                         <td class="action-links">
                             <a href="{% url 'produto-detail' produto.pk %}">Ver Detalhes</a>
                         </td>
