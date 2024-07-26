@@ -29,9 +29,46 @@
             font-size: 16px;
             color: #666;
         }
+        .navbar {
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.navbar a {
+    float: left;
+    display: block;
+    color: #fff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 4px;
+    margin: 8px;
+
+        }
+        .navbar a:hover {
+            background-color: #fff;
+            color: #000;
+        }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="{% url 'produto-create' %}">Criar Produto</a>
+        <a href="{% url 'produto-list' %}">Listar Produtos</a>
+        <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
+        <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
+        <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por Embalagem</a>
+        <a href="{% url 'produtos-por-fabricante' %}">Gerenciar por Fabricante</a>
+        <a href="{% url 'produtos-por-transacao' %}">Gerenciar por Transação</a>
+        <a href="{% url 'marca-list' %}">Gerenciar por Marcas</a>
+        <a href="{% url 'transacoes-tipos' %}">Transações</a>
+        <a href="{% url 'user_subsetor' %}">Teste Usuário</a>
+    </div>
     <div class="info-container">
         <h2>Informações do Usuário</h2>
         <p><strong>Nome de usuário:</strong> {{ user.username }}</p>    

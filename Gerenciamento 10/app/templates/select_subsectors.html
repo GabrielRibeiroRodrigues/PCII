@@ -80,7 +80,8 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'produto-create' %}">Criar Produto</a>
+        <a href="{% url 'produto-list' %}">Listar Produtos</a>
         <a href="{% url 'produtos-por-setor' setor_id=1 %}">Produtos por Setor</a>
         <a href="{% url 'produtos-por-subsetor' subsetor_id=1 %}">Produtos por Subsetor</a>
         <a href="{% url 'produtos-por-tipo-embalagem' %}">Gerenciar por Embalagem</a>
@@ -88,6 +89,7 @@
         <a href="{% url 'produtos-por-transacao' %}">Gerenciar por Transação</a>
         <a href="{% url 'marca-list' %}">Gerenciar por Marcas</a>
         <a href="{% url 'transacoes-tipos' %}">Transações</a>
+        <a href="{% url 'user_subsetor' %}">Teste Usuário</a>
     </div>
 
     <div class="content">
