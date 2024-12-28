@@ -136,23 +136,26 @@ class DetalheProduto(models.Model):
     tipo_embalagem_produto = models.ForeignKey(TipoEmbalagem, related_name='produtos', on_delete=models.CASCADE)        
     preco_custo_produto = models.DecimalField(max_digits=10, decimal_places=2)
     preco_venda_produto = models.DecimalField(max_digits=10, decimal_places=2)
-    subsetor = models.ForeignKey(Subsector, related_name='produtos', on_delete=models.CASCADE)
+    
 
     def __str__(self):
-        return f"{self.produto.nome_produto} - {self.subsetor.nome_sub_setor}"
+        return f"{self.produto.nome_produto}"
     
 class DetalheProdutoEstoque(models.Model):
     id_produto = models.ForeignKey(DetalheProduto, related_name= "detalhess", on_delete= models.CASCADE);  
-    quantidade_estoque = models.IntegerField(default = 0);  
+    id_subsector = models.ForeignKey(Subsector, related_name='subsetor', on_delete=models.CASCADE)
+    quantidade_estoque = models.IntegerField(default = 0);    
     def __str__(self):
-        return f"{self.id_produto.produto.nome_produto} - {self.id_produto.subsetor.nome_sub_setor}"
+        return f"{self.id_produto.produto.nome_produto} - {self.id_subsector.nome_sub_setor}"
+
     
 
 class DetalheProdutoFoto(models.Model):
-    id_produto = models.ForeignKey(DetalheProduto, related_name= "id_det", on_delete= models.CASCADE);  
-    linkCaminho = models.CharField(max_length = 100);  
+    id_produto = models.ForeignKey(DetalheProduto, related_name="id_det", on_delete=models.CASCADE)
+    linkCaminho = models.CharField(max_length=100)
+    
     def __str__(self):
-        return f"{self.id_produto.produto.nome_produto} - {self.id_produto.subsetor.nome_sub_setor}"
+        return self.id_produto.produto.nome_produto
 
 class MovimentacaoProduto(models.Model):
     data_hora_movimentacao = models.DateTimeField(default=timezone.now)
@@ -167,6 +170,7 @@ class MovimentacaoProduto(models.Model):
         try:
             estoque_origem = DetalheProdutoEstoque.objects.get(
                 id_produto=self.detalhe_produto,
+                id_subsector=self.subsector_origem
             )
         except DetalheProdutoEstoque.DoesNotExist:
             raise ValidationError("Produto não encontrado no estoque de origem.")
@@ -178,24 +182,10 @@ class MovimentacaoProduto(models.Model):
         estoque_origem.quantidade_estoque -= self.quantidade_movimentada
         estoque_origem.save()
 
-        # Verificar ou criar detalhe do produto no subsetor de destino
-        detalhe_produto_destino, created = DetalheProduto.objects.get_or_create(
-            produto=self.detalhe_produto.produto,
-            subsetor=self.subsector_destino,
-            defaults={
-                'unidade_produto': self.detalhe_produto.unidade_produto,
-                'cor_produto': self.detalhe_produto.cor_produto,
-                'sabor_produto': self.detalhe_produto.sabor_produto,
-                'quantidade_embalagem_produto': self.detalhe_produto.quantidade_embalagem_produto,
-                'tipo_embalagem_produto': self.detalhe_produto.tipo_embalagem_produto,
-                'preco_custo_produto': self.detalhe_produto.preco_custo_produto,
-                'preco_venda_produto': self.detalhe_produto.preco_venda_produto,
-            }
-        )
-
-        # Atualizar ou criar estoque no subsetor de destino
+        # Verificar ou criar estoque no subsetor de destino
         estoque_destino, created = DetalheProdutoEstoque.objects.get_or_create(
-            id_produto=detalhe_produto_destino,
+            id_produto=self.detalhe_produto,
+            id_subsector=self.subsector_destino
         )
         estoque_destino.quantidade_estoque += self.quantidade_movimentada
         estoque_destino.save()

@@ -11,7 +11,7 @@ class ProdutoForm(forms.ModelForm):
 class DetalheProdutoForm(forms.ModelForm):
     class Meta:
         model = DetalheProduto
-        fields = ['unidade_produto', 'cor_produto', 'sabor_produto', 'quantidade_embalagem_produto', 'tipo_embalagem_produto', 'preco_custo_produto', 'preco_venda_produto', 'subsetor']
+        fields = ['unidade_produto', 'cor_produto', 'sabor_produto', 'quantidade_embalagem_produto', 'tipo_embalagem_produto', 'preco_custo_produto', 'preco_venda_produto']
 
 #FORMULARIO PARA CRIAR MOVIMENTACOEES
 
