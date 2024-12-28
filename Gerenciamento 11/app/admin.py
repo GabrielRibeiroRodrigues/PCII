@@ -22,8 +22,8 @@ admin.site.register(Tipo)
 admin.site.register(Subtipo)
 admin.site.register(MovimentacaoProduto)
 admin.site.register(ProdutoMovimentoItem)
-
-
+admin.site.register(DetalheProdutoEstoque)
+admin.site.register(DetalheProdutoFoto)
 class CustomUserAdmin(BaseUserAdmin):
     model = CustomUser
     list_display = ('username', 'email', 'subsetor', 'is_staff')

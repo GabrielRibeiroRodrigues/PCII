@@ -133,8 +133,7 @@ class DetalheProduto(models.Model):
     cor_produto = models.CharField(max_length=100)
     sabor_produto = models.CharField(max_length=100)
     quantidade_embalagem_produto = models.IntegerField(default=0)
-    tipo_embalagem_produto = models.ForeignKey(TipoEmbalagem, related_name='produtos', on_delete=models.CASCADE)
-    quantidade_produto = models.IntegerField(default=0)
+    tipo_embalagem_produto = models.ForeignKey(TipoEmbalagem, related_name='produtos', on_delete=models.CASCADE)        
     preco_custo_produto = models.DecimalField(max_digits=10, decimal_places=2)
     preco_venda_produto = models.DecimalField(max_digits=10, decimal_places=2)
     subsetor = models.ForeignKey(Subsector, related_name='produtos', on_delete=models.CASCADE)
@@ -142,6 +141,18 @@ class DetalheProduto(models.Model):
     def __str__(self):
         return f"{self.produto.nome_produto} - {self.subsetor.nome_sub_setor}"
     
+class DetalheProdutoEstoque(models.Model):
+    id_produto = models.ForeignKey(DetalheProduto, related_name= "detalhess", on_delete= models.CASCADE);  
+    quantidade_estoque = models.IntegerField(default = 0);  
+    def __str__(self):
+        return f"{self.id_produto.produto.nome_produto} - {self.id_produto.subsetor.nome_sub_setor}"
+    
+
+class DetalheProdutoFoto(models.Model):
+    id_produto = models.ForeignKey(DetalheProduto, related_name= "id_det", on_delete= models.CASCADE);  
+    linkCaminho = models.CharField(max_length = 100);  
+    def __str__(self):
+        return f"{self.id_produto.produto.nome_produto} - {self.id_produto.subsetor.nome_sub_setor}"
 
 class MovimentacaoProduto(models.Model):
     data_hora_movimentacao = models.DateTimeField(default=timezone.now)
@@ -152,12 +163,22 @@ class MovimentacaoProduto(models.Model):
     transacao = models.ForeignKey(Transaction, related_name='movimentacoes', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if self.detalhe_produto.quantidade_produto < self.quantidade_movimentada:
-            raise ValidationError("Quantidade insuficiente no subsetor de origem para realizar a movimentação.")
+        # Verificar estoque na origem
+        try:
+            estoque_origem = DetalheProdutoEstoque.objects.get(
+                id_produto=self.detalhe_produto,
+            )
+        except DetalheProdutoEstoque.DoesNotExist:
+            raise ValidationError("Produto não encontrado no estoque de origem.")
 
-        self.detalhe_produto.quantidade_produto -= self.quantidade_movimentada
-        self.detalhe_produto.save()
+        if estoque_origem.quantidade_estoque < self.quantidade_movimentada:
+            raise ValidationError("Quantidade insuficiente no estoque de origem.")
 
+        # Atualizar estoque de origem
+        estoque_origem.quantidade_estoque -= self.quantidade_movimentada
+        estoque_origem.save()
+
+        # Verificar ou criar detalhe do produto no subsetor de destino
         detalhe_produto_destino, created = DetalheProduto.objects.get_or_create(
             produto=self.detalhe_produto.produto,
             subsetor=self.subsector_destino,
@@ -167,19 +188,22 @@ class MovimentacaoProduto(models.Model):
                 'sabor_produto': self.detalhe_produto.sabor_produto,
                 'quantidade_embalagem_produto': self.detalhe_produto.quantidade_embalagem_produto,
                 'tipo_embalagem_produto': self.detalhe_produto.tipo_embalagem_produto,
-                'quantidade_produto': 0,
                 'preco_custo_produto': self.detalhe_produto.preco_custo_produto,
                 'preco_venda_produto': self.detalhe_produto.preco_venda_produto,
             }
         )
-    
-        detalhe_produto_destino.quantidade_produto += self.quantidade_movimentada
-        detalhe_produto_destino.save()
+
+        # Atualizar ou criar estoque no subsetor de destino
+        estoque_destino, created = DetalheProdutoEstoque.objects.get_or_create(
+            id_produto=detalhe_produto_destino,
+        )
+        estoque_destino.quantidade_estoque += self.quantidade_movimentada
+        estoque_destino.save()
 
         super().save(*args, **kwargs)
-            
+
     def __str__(self):
-        return f"Movimentação de {self.quantidade_movimentada} unidades de {self.detalhe_produto.produto.nome_produto} entre o Subsetor origem {self.subsector_origem} para o Subsetor destino {self.subsector_destino}"
+        return f"Movimentação de {self.quantidade_movimentada} unidades de {self.detalhe_produto.produto.nome_produto} entre {self.subsector_origem.nome_sub_setor} e {self.subsector_destino.nome_sub_setor}"
 
 class ProdutoMovimentoItem(models.Model):
     id_produto_saida = models.ForeignKey('DetalheProduto', related_name='produtos_saida', on_delete=models.CASCADE)
